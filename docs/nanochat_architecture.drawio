@@ -1,0 +1,184 @@
+<mxfile host="app.diagrams.net" modified="2026-02-04T02:29:00.000Z" agent="nanochat-analyzer" version="21.0.0">
+  <diagram name="代码架构图" id="architecture">
+    <mxGraphModel dx="1200" dy="800" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="1200" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+        
+        <!-- 标题 -->
+        <mxCell id="title" value="NanoChat 代码架构图" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontSize=24;fontStyle=1;fontColor=#333333;" parent="1" vertex="1">
+          <mxGeometry x="600" y="20" width="400" height="40" as="geometry"/>
+        </mxCell>
+        
+        <!-- 入口脚本层 -->
+        <mxCell id="scripts_layer" value="入口脚本层 (scripts/)" style="swimlane;horizontal=1;startSize=30;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=14;fontStyle=1;" parent="1" vertex="1">
+          <mxGeometry x="80" y="80" width="1440" height="120" as="geometry"/>
+        </mxCell>
+        <mxCell id="base_train" value="base_train.py&#xa;预训练脚本" style="rounded=1;fillColor=#fff2cc;strokeColor=#d6b656;" parent="scripts_layer" vertex="1">
+          <mxGeometry x="20" y="40" width="120" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="base_eval" value="base_eval.py&#xa;基座评估" style="rounded=1;fillColor=#fff2cc;strokeColor=#d6b656;" parent="scripts_layer" vertex="1">
+          <mxGeometry x="160" y="40" width="120" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="chat_sft" value="chat_sft.py&#xa;SFT微调" style="rounded=1;fillColor=#d5e8d4;strokeColor=#82b366;" parent="scripts_layer" vertex="1">
+          <mxGeometry x="300" y="40" width="120" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="chat_rl" value="chat_rl.py&#xa;强化学习" style="rounded=1;fillColor=#d5e8d4;strokeColor=#82b366;" parent="scripts_layer" vertex="1">
+          <mxGeometry x="440" y="40" width="120" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="chat_eval" value="chat_eval.py&#xa;对话评估" style="rounded=1;fillColor=#d5e8d4;strokeColor=#82b366;" parent="scripts_layer" vertex="1">
+          <mxGeometry x="580" y="40" width="120" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="chat_web" value="chat_web.py&#xa;Web服务" style="rounded=1;fillColor=#e1d5e7;strokeColor=#9673a6;" parent="scripts_layer" vertex="1">
+          <mxGeometry x="720" y="40" width="120" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="chat_cli" value="chat_cli.py&#xa;命令行交互" style="rounded=1;fillColor=#e1d5e7;strokeColor=#9673a6;" parent="scripts_layer" vertex="1">
+          <mxGeometry x="860" y="40" width="120" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="tok_train" value="tok_train.py&#xa;分词器训练" style="rounded=1;fillColor=#f8cecc;strokeColor=#b85450;" parent="scripts_layer" vertex="1">
+          <mxGeometry x="1020" y="40" width="120" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="tok_eval" value="tok_eval.py&#xa;分词器评估" style="rounded=1;fillColor=#f8cecc;strokeColor=#b85450;" parent="scripts_layer" vertex="1">
+          <mxGeometry x="1160" y="40" width="120" height="60" as="geometry"/>
+        </mxCell>
+        
+        <!-- 核心模块层 -->
+        <mxCell id="core_layer" value="核心模块层 (nanochat/)" style="swimlane;horizontal=1;startSize=30;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=14;fontStyle=1;" parent="1" vertex="1">
+          <mxGeometry x="80" y="220" width="1440" height="250" as="geometry"/>
+        </mxCell>
+        
+        <!-- 模型子模块 -->
+        <mxCell id="model_group" value="模型架构" style="swimlane;startSize=25;fillColor=#fff2cc;strokeColor=#d6b656;" parent="core_layer" vertex="1">
+          <mxGeometry x="20" y="40" width="280" height="190" as="geometry"/>
+        </mxCell>
+        <mxCell id="gpt" value="gpt.py&#xa;GPT Transformer&#xa;(GPTConfig, Block,&#xa;CausalSelfAttention, MLP)" style="rounded=1;fillColor=#ffffff;strokeColor=#d6b656;" parent="model_group" vertex="1">
+          <mxGeometry x="10" y="35" width="130" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="flash_attn" value="flash_attention.py&#xa;FA3/SDPA统一接口" style="rounded=1;fillColor=#ffffff;strokeColor=#d6b656;" parent="model_group" vertex="1">
+          <mxGeometry x="145" y="35" width="125" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="optim" value="optim.py&#xa;MuonAdamW优化器&#xa;(单GPU/分布式)" style="rounded=1;fillColor=#ffffff;strokeColor=#d6b656;" parent="model_group" vertex="1">
+          <mxGeometry x="10" y="115" width="130" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="ckpt" value="checkpoint_manager.py&#xa;模型保存/加载" style="rounded=1;fillColor=#ffffff;strokeColor=#d6b656;" parent="model_group" vertex="1">
+          <mxGeometry x="145" y="115" width="125" height="50" as="geometry"/>
+        </mxCell>
+        
+        <!-- 数据子模块 -->
+        <mxCell id="data_group" value="数据处理" style="swimlane;startSize=25;fillColor=#d5e8d4;strokeColor=#82b366;" parent="core_layer" vertex="1">
+          <mxGeometry x="320" y="40" width="280" height="190" as="geometry"/>
+        </mxCell>
+        <mxCell id="tokenizer" value="tokenizer.py&#xa;BPE分词器&#xa;(HuggingFace/RustBPE)" style="rounded=1;fillColor=#ffffff;strokeColor=#82b366;" parent="data_group" vertex="1">
+          <mxGeometry x="10" y="35" width="125" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="dataloader" value="dataloader.py&#xa;分布式数据加载&#xa;(BOS对齐+BestFit)" style="rounded=1;fillColor=#ffffff;strokeColor=#82b366;" parent="data_group" vertex="1">
+          <mxGeometry x="145" y="35" width="125" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="dataset" value="dataset.py&#xa;数据集下载/读取" style="rounded=1;fillColor=#ffffff;strokeColor=#82b366;" parent="data_group" vertex="1">
+          <mxGeometry x="10" y="115" width="125" height="50" as="geometry"/>
+        </mxCell>
+        
+        <!-- 推理子模块 -->
+        <mxCell id="inference_group" value="推理引擎" style="swimlane;startSize=25;fillColor=#e1d5e7;strokeColor=#9673a6;" parent="core_layer" vertex="1">
+          <mxGeometry x="620" y="40" width="280" height="190" as="geometry"/>
+        </mxCell>
+        <mxCell id="engine" value="engine.py&#xa;推理引擎&#xa;(KVCache, 采样, 生成)" style="rounded=1;fillColor=#ffffff;strokeColor=#9673a6;" parent="inference_group" vertex="1">
+          <mxGeometry x="10" y="35" width="125" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="execution" value="execution.py&#xa;工具执行&#xa;(Python代码执行)" style="rounded=1;fillColor=#ffffff;strokeColor=#9673a6;" parent="inference_group" vertex="1">
+          <mxGeometry x="145" y="35" width="125" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="ui" value="ui.html&#xa;Web UI前端" style="rounded=1;fillColor=#ffffff;strokeColor=#9673a6;" parent="inference_group" vertex="1">
+          <mxGeometry x="10" y="115" width="125" height="50" as="geometry"/>
+        </mxCell>
+        
+        <!-- 评估子模块 -->
+        <mxCell id="eval_group" value="评估模块" style="swimlane;startSize=25;fillColor=#f8cecc;strokeColor=#b85450;" parent="core_layer" vertex="1">
+          <mxGeometry x="920" y="40" width="280" height="190" as="geometry"/>
+        </mxCell>
+        <mxCell id="core_eval" value="core_eval.py&#xa;CORE评分&#xa;(DCLM基准)" style="rounded=1;fillColor=#ffffff;strokeColor=#b85450;" parent="eval_group" vertex="1">
+          <mxGeometry x="10" y="35" width="125" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="loss_eval" value="loss_eval.py&#xa;BPB评估" style="rounded=1;fillColor=#ffffff;strokeColor=#b85450;" parent="eval_group" vertex="1">
+          <mxGeometry x="145" y="35" width="125" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="report" value="report.py&#xa;训练报告生成" style="rounded=1;fillColor=#ffffff;strokeColor=#b85450;" parent="eval_group" vertex="1">
+          <mxGeometry x="10" y="115" width="125" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="common" value="common.py&#xa;通用工具函数" style="rounded=1;fillColor=#ffffff;strokeColor=#b85450;" parent="eval_group" vertex="1">
+          <mxGeometry x="145" y="115" width="125" height="50" as="geometry"/>
+        </mxCell>
+        
+        <!-- 任务层 -->
+        <mxCell id="tasks_layer" value="任务数据集层 (tasks/)" style="swimlane;horizontal=1;startSize=30;fillColor=#f5f5f5;strokeColor=#666666;fontSize=14;fontStyle=1;" parent="1" vertex="1">
+          <mxGeometry x="80" y="490" width="1440" height="100" as="geometry"/>
+        </mxCell>
+        <mxCell id="task_common" value="common.py&#xa;Task基类&#xa;TaskMixture/Sequence" style="rounded=1;fillColor=#ffffff;strokeColor=#666666;" parent="tasks_layer" vertex="1">
+          <mxGeometry x="20" y="35" width="140" height="55" as="geometry"/>
+        </mxCell>
+        <mxCell id="smoltalk" value="smoltalk.py&#xa;通用对话" style="rounded=1;fillColor=#ffffff;strokeColor=#666666;" parent="tasks_layer" vertex="1">
+          <mxGeometry x="180" y="35" width="100" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="mmlu" value="mmlu.py&#xa;多领域选择题" style="rounded=1;fillColor=#ffffff;strokeColor=#666666;" parent="tasks_layer" vertex="1">
+          <mxGeometry x="300" y="35" width="100" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="arc" value="arc.py&#xa;科学选择题" style="rounded=1;fillColor=#ffffff;strokeColor=#666666;" parent="tasks_layer" vertex="1">
+          <mxGeometry x="420" y="35" width="100" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="gsm8k" value="gsm8k.py&#xa;数学问题" style="rounded=1;fillColor=#ffffff;strokeColor=#666666;" parent="tasks_layer" vertex="1">
+          <mxGeometry x="540" y="35" width="100" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="humaneval" value="humaneval.py&#xa;代码任务" style="rounded=1;fillColor=#ffffff;strokeColor=#666666;" parent="tasks_layer" vertex="1">
+          <mxGeometry x="660" y="35" width="100" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="spellingbee" value="spellingbee.py&#xa;拼写任务" style="rounded=1;fillColor=#ffffff;strokeColor=#666666;" parent="tasks_layer" vertex="1">
+          <mxGeometry x="780" y="35" width="100" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="customjson" value="customjson.py&#xa;自定义JSONL" style="rounded=1;fillColor=#ffffff;strokeColor=#666666;" parent="tasks_layer" vertex="1">
+          <mxGeometry x="900" y="35" width="100" height="50" as="geometry"/>
+        </mxCell>
+        
+        <!-- 依赖箭头 -->
+        <mxCell id="arrow1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#666666;strokeWidth=2;endArrow=block;" parent="1" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="200" y="200" as="sourcePoint"/>
+            <mxPoint x="200" y="260" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="arrow2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#666666;strokeWidth=2;endArrow=block;" parent="1" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="800" y="200" as="sourcePoint"/>
+            <mxPoint x="800" y="260" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="arrow3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#666666;strokeWidth=2;endArrow=block;" parent="1" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="460" y="470" as="sourcePoint"/>
+            <mxPoint x="460" y="520" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        
+        <!-- 图例 -->
+        <mxCell id="legend" value="图例" style="swimlane;startSize=25;fillColor=#ffffff;strokeColor=#333333;" parent="1" vertex="1">
+          <mxGeometry x="80" y="610" width="400" height="80" as="geometry"/>
+        </mxCell>
+        <mxCell id="leg1" value="预训练" style="rounded=1;fillColor=#fff2cc;strokeColor=#d6b656;" parent="legend" vertex="1">
+          <mxGeometry x="10" y="35" width="70" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="leg2" value="SFT/RL" style="rounded=1;fillColor=#d5e8d4;strokeColor=#82b366;" parent="legend" vertex="1">
+          <mxGeometry x="90" y="35" width="70" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="leg3" value="推理服务" style="rounded=1;fillColor=#e1d5e7;strokeColor=#9673a6;" parent="legend" vertex="1">
+          <mxGeometry x="170" y="35" width="70" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="leg4" value="分词器" style="rounded=1;fillColor=#f8cecc;strokeColor=#b85450;" parent="legend" vertex="1">
+          <mxGeometry x="250" y="35" width="70" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="leg5" value="任务" style="rounded=1;fillColor=#f5f5f5;strokeColor=#666666;" parent="legend" vertex="1">
+          <mxGeometry x="330" y="35" width="60" height="30" as="geometry"/>
+        </mxCell>
+        
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
