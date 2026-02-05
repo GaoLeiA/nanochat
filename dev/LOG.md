@@ -4,6 +4,32 @@ A running summary documenting some experiments and findings. Started ~Jan 7 2026
 
 ---
 
+## 2026-02-05: SwiGLU Activation (Negative Result)
+
+Replaced ReLU² MLP activation with SwiGLU (inspired by [twitter](https://x.com/_xjdr/status/2019141521690567058)). SwiGLU uses three projections instead of two, so to match parameters and FLOPs we scale hidden_dim from 4× to 8/3×:
+
+```python
+# Old ReLU²: 2 matrices, 4x expansion
+#   params: 2 × n × 4n = 8n²
+#   flops:  2 × 2n × 4n = 16n² per token
+self.c_fc   = Linear(n_embd, 4 * n_embd)
+self.c_proj = Linear(4 * n_embd, n_embd)
+x = c_proj(relu(c_fc(x)).square())
+
+# New SwiGLU: 3 matrices, 8/3x expansion
+#   params: 2 × n × (8n/3) + (8n/3) × n = 8n²  ✓ matches
+#   flops:  3 × 2n × (8n/3) = 16n² per token   ✓ matches
+hidden_dim = (8 * n_embd) // 3
+self.w1 = Linear(n_embd, hidden_dim)  # gate
+self.w2 = Linear(n_embd, hidden_dim)  # up
+self.w3 = Linear(hidden_dim, n_embd)  # down
+x = w3(silu(w1(x)) * w2(x))
+```
+
+Tested at both d12 and d24 (GPT-2 scale). Worse on all measures — step efficiency, wall clock time, and FLOPs. ReLU² remains superior for nanochat. **Not adopted.**
+
+---
+
 ## 2026-02-03: Flip Muon MLP LR Multiplier (PR #492)
 
 Tested flipping the shape-based LR heuristic in Muon from boosting tall matrices (input projections like `c_fc`) to boosting wide matrices (output projections like `c_proj`). The original code applies `max(1, rows/cols)^0.5`, giving ~2x LR to `c_fc`. The flipped version gives ~2x LR to `c_proj` instead, which aligns with classical fan-in/fan-out scaling conventions. This was proposed in [PR #492](https://github.com/karpathy/nanochat/pull/492) and showed improvements in modded-nanogpt.
@@ -733,8 +759,8 @@ Cherry-picked improvements from NorMuon (modded-nanogpt) into our simpler Muon i
 - Both methods kept in code for easy comparison (`zeropower_via_polar_express` vs `zeropower_via_newtonschulz5`)
 - **Result:** No dramatic/noticeable difference in training, but keeping the new Polar Express as default.
 
-**2. Variance Reduction (NorMuon-style)**
-- Added low-rank variance estimator similar to Adafactor ([arxiv.org/pdf/2510.05491](https://arxiv.org/pdf/2510.05491))
+**2. NorMuon Variance Reduction**
+- Added per-neuron/column adaptive learning rate from NorMuon ([arxiv.org/pdf/2510.05491](https://arxiv.org/pdf/2510.05491))
 - Maintains `second_momentum_buffer` with shape `[rows, 1]` or `[1, cols]` (whichever is smaller)
 - Normalizes updates based on running per-row/col variance estimate (beta2=0.95)
 - Memory overhead: ~1/max(rows, cols) per param, negligible
@@ -776,7 +802,7 @@ Example: If d12 optimal is 0.22, then d20 optimal ≈ 0.22 × (12/20)² ≈ 0.08
 
 ### Summary
 
-Muon was changed to use Polar Express, added Adafactor-style variance reduction, and cautious weight decay with schedule that ramps linearly to zero. All of these changes follow modded-nanogpt repo, but all of them were also validated piece by piece to yield improvements in nanochat with the exception of the Polar Express change which was in the noise. This is default on and configurable with `--weight_decay`, using simply 0.2 and ∝ 1/width² scaling. The kwarg `--weight_decay` is therefore changing as of this change. It used to configure AdamW via standard weight decay and now it becomes exclusively used in Muon (AdamW is hardcoded to 0.0), and it is scaled based on depth.
+Muon was changed to use Polar Express, added NorMuon variance reduction, and cautious weight decay with schedule that ramps linearly to zero. All of these changes follow modded-nanogpt repo, but all of them were also validated piece by piece to yield improvements in nanochat with the exception of the Polar Express change which was in the noise. This is default on and configurable with `--weight_decay`, using simply 0.2 and ∝ 1/width² scaling. The kwarg `--weight_decay` is therefore changing as of this change. It used to configure AdamW via standard weight decay and now it becomes exclusively used in Muon (AdamW is hardcoded to 0.0), and it is scaled based on depth.
 
 ---
 
