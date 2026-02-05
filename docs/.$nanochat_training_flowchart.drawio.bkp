@@ -1,0 +1,229 @@
+<mxfile host="app.diagrams.net">
+  <diagram name="LLM训练流程图" id="training_flowchart">
+    <mxGraphModel dx="1200" dy="800" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1400" pageHeight="1600">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+        
+        <!-- 标题 -->
+        <mxCell id="title" value="NanoChat 完整训练流程图" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontSize=22;fontStyle=1;fontColor=#333333;" parent="1" vertex="1">
+          <mxGeometry x="450" y="20" width="300" height="40" as="geometry"/>
+        </mxCell>
+        
+        <!-- ========== 阶段1: 分词器训练 ========== -->
+        <mxCell id="phase1" value="阶段1: 分词器训练" style="swimlane;startSize=30;fillColor=#f8cecc;strokeColor=#b85450;fontStyle=1;fontSize=14;" parent="1" vertex="1">
+          <mxGeometry x="40" y="80" width="300" height="280" as="geometry"/>
+        </mxCell>
+        <mxCell id="tok_start" value="开始" style="ellipse;fillColor=#d5e8d4;strokeColor=#82b366;" parent="phase1" vertex="1">
+          <mxGeometry x="115" y="40" width="70" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="tok_load" value="加载训练语料" style="rounded=1;fillColor=#fff2cc;strokeColor=#d6b656;" parent="phase1" vertex="1">
+          <mxGeometry x="90" y="100" width="120" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="tok_train" value="训练BPE分词器&#xa;(RustBPE)" style="rounded=1;fillColor=#fff2cc;strokeColor=#d6b656;" parent="phase1" vertex="1">
+          <mxGeometry x="90" y="160" width="120" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="tok_save" value="保存分词器&#xa;(vocab, merges)" style="rounded=1;fillColor=#fff2cc;strokeColor=#d6b656;" parent="phase1" vertex="1">
+          <mxGeometry x="90" y="220" width="120" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="e1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;" parent="phase1" source="tok_start" target="tok_load" edge="1"/>
+        <mxCell id="e2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;" parent="phase1" source="tok_load" target="tok_train" edge="1"/>
+        <mxCell id="e3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;" parent="phase1" source="tok_train" target="tok_save" edge="1"/>
+        
+        <!-- ========== 阶段2: 预训练 ========== -->
+        <mxCell id="phase2" value="阶段2: 基座模型预训练 (Base Training)" style="swimlane;startSize=30;fillColor=#fff2cc;strokeColor=#d6b656;fontStyle=1;fontSize=14;" parent="1" vertex="1">
+          <mxGeometry x="360" y="80" width="340" height="520" as="geometry"/>
+        </mxCell>
+        <mxCell id="pt_init" value="初始化" style="ellipse;fillColor=#d5e8d4;strokeColor=#82b366;" parent="phase2" vertex="1">
+          <mxGeometry x="135" y="40" width="70" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="pt_tok" value="加载分词器" style="rounded=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" parent="phase2" vertex="1">
+          <mxGeometry x="105" y="100" width="120" height="35" as="geometry"/>
+        </mxCell>
+        <mxCell id="pt_model" value="创建GPT模型&#xa;(meta device)" style="rounded=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" parent="phase2" vertex="1">
+          <mxGeometry x="105" y="150" width="120" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="pt_weights" value="初始化权重&#xa;init_weights()" style="rounded=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" parent="phase2" vertex="1">
+          <mxGeometry x="105" y="205" width="120" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="pt_compile" value="torch.compile()" style="rounded=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" parent="phase2" vertex="1">
+          <mxGeometry x="105" y="260" width="120" height="35" as="geometry"/>
+        </mxCell>
+        <mxCell id="pt_optim" value="创建MuonAdamW&#xa;优化器" style="rounded=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" parent="phase2" vertex="1">
+          <mxGeometry x="105" y="310" width="120" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="pt_loop" value="训练循环" style="rhombus;fillColor=#e1d5e7;strokeColor=#9673a6;" parent="phase2" vertex="1">
+          <mxGeometry x="100" y="365" width="130" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="pt_fwd" value="forward + backward&#xa;+ optimizer.step()" style="rounded=1;fillColor=#ffe6cc;strokeColor=#d79b00;" parent="phase2" vertex="1">
+          <mxGeometry x="235" y="375" width="95" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="pt_eval" value="评估CORE/BPB" style="rounded=1;fillColor=#f5f5f5;strokeColor=#666666;" parent="phase2" vertex="1">
+          <mxGeometry x="10" y="375" width="85" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="pt_save" value="保存checkpoint" style="rounded=1;fillColor=#d5e8d4;strokeColor=#82b366;" parent="phase2" vertex="1">
+          <mxGeometry x="110" y="465" width="110" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="e4" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;" parent="phase2" source="pt_init" target="pt_tok" edge="1"/>
+        <mxCell id="e5" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;" parent="phase2" source="pt_tok" target="pt_model" edge="1"/>
+        <mxCell id="e6" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;" parent="phase2" source="pt_model" target="pt_weights" edge="1"/>
+        <mxCell id="e7" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;" parent="phase2" source="pt_weights" target="pt_compile" edge="1"/>
+        <mxCell id="e8" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;" parent="phase2" source="pt_compile" target="pt_optim" edge="1"/>
+        <mxCell id="e9" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;" parent="phase2" source="pt_optim" target="pt_loop" edge="1"/>
+        <mxCell id="e10" value="继续" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;exitX=1;exitY=0.5;" parent="phase2" source="pt_loop" target="pt_fwd" edge="1"/>
+        <mxCell id="e10b" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;entryX=1;entryY=0;" parent="phase2" source="pt_fwd" target="pt_loop" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points"><mxPoint x="283" y="365"/><mxPoint x="180" y="365"/></Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e11" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;dashed=1;exitX=0;exitY=0.5;" parent="phase2" source="pt_loop" target="pt_eval" edge="1"/>
+        <mxCell id="e12" value="完成" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;exitX=0.5;exitY=1;" parent="phase2" source="pt_loop" target="pt_save" edge="1"/>
+        
+        <!-- ========== 阶段3: SFT微调 ========== -->
+        <mxCell id="phase3" value="阶段3: SFT微调" style="swimlane;startSize=30;fillColor=#d5e8d4;strokeColor=#82b366;fontStyle=1;fontSize=14;" parent="1" vertex="1">
+          <mxGeometry x="720" y="80" width="300" height="400" as="geometry"/>
+        </mxCell>
+        <mxCell id="sft_start" value="加载Base模型" style="ellipse;fillColor=#dae8fc;strokeColor=#6c8ebf;" parent="phase3" vertex="1">
+          <mxGeometry x="90" y="45" width="110" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="sft_data" value="创建TaskMixture&#xa;(SmolTalk+MMLU&#xa;+GSM8K+...)" style="rounded=1;fillColor=#fff2cc;strokeColor=#d6b656;" parent="phase3" vertex="1">
+          <mxGeometry x="85" y="105" width="130" height="55" as="geometry"/>
+        </mxCell>
+        <mxCell id="sft_loader" value="SFT DataLoader&#xa;(BOS对齐+BestFit)" style="rounded=1;fillColor=#fff2cc;strokeColor=#d6b656;" parent="phase3" vertex="1">
+          <mxGeometry x="85" y="180" width="130" height="45" as="geometry"/>
+        </mxCell>
+        <mxCell id="sft_loop" value="SFT训练循环&#xa;(带mask)" style="rhombus;fillColor=#e1d5e7;strokeColor=#9673a6;" parent="phase3" vertex="1">
+          <mxGeometry x="85" y="245" width="130" height="55" as="geometry"/>
+        </mxCell>
+        <mxCell id="sft_save" value="保存SFT模型" style="rounded=1;fillColor=#d5e8d4;strokeColor=#82b366;" parent="phase3" vertex="1">
+          <mxGeometry x="95" y="330" width="110" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="e13" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;" parent="phase3" source="sft_start" target="sft_data" edge="1"/>
+        <mxCell id="e14" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;" parent="phase3" source="sft_data" target="sft_loader" edge="1"/>
+        <mxCell id="e15" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;" parent="phase3" source="sft_loader" target="sft_loop" edge="1"/>
+        <mxCell id="e16" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;" parent="phase3" source="sft_loop" target="sft_save" edge="1"/>
+        
+        <!-- ========== 阶段4: RL训练 ========== -->
+        <mxCell id="phase4" value="阶段4: RL强化学习 (可选)" style="swimlane;startSize=30;fillColor=#ffe6cc;strokeColor=#d79b00;fontStyle=1;fontSize=14;" parent="1" vertex="1">
+          <mxGeometry x="1040" y="80" width="300" height="350" as="geometry"/>
+        </mxCell>
+        <mxCell id="rl_start" value="加载SFT模型" style="ellipse;fillColor=#dae8fc;strokeColor=#6c8ebf;" parent="phase4" vertex="1">
+          <mxGeometry x="90" y="45" width="110" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="rl_task" value="加载RL任务&#xa;(GSM8K/代码执行)" style="rounded=1;fillColor=#fff2cc;strokeColor=#d6b656;" parent="phase4" vertex="1">
+          <mxGeometry x="85" y="105" width="130" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="rl_gen" value="模型生成回答" style="rounded=1;fillColor=#e1d5e7;strokeColor=#9673a6;" parent="phase4" vertex="1">
+          <mxGeometry x="85" y="175" width="130" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="rl_reward" value="计算Reward&#xa;(正确性评估)" style="rounded=1;fillColor=#f8cecc;strokeColor=#b85450;" parent="phase4" vertex="1">
+          <mxGeometry x="85" y="235" width="130" height="45" as="geometry"/>
+        </mxCell>
+        <mxCell id="rl_update" value="策略梯度更新" style="rounded=1;fillColor=#d5e8d4;strokeColor=#82b366;" parent="phase4" vertex="1">
+          <mxGeometry x="85" y="300" width="130" height="35" as="geometry"/>
+        </mxCell>
+        <mxCell id="e17" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;" parent="phase4" source="rl_start" target="rl_task" edge="1"/>
+        <mxCell id="e18" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;" parent="phase4" source="rl_task" target="rl_gen" edge="1"/>
+        <mxCell id="e19" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;" parent="phase4" source="rl_gen" target="rl_reward" edge="1"/>
+        <mxCell id="e20" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;" parent="phase4" source="rl_reward" target="rl_update" edge="1"/>
+        
+        <!-- ========== 阶段5: 推理服务 ========== -->
+        <mxCell id="phase5" value="阶段5: 推理服务" style="swimlane;startSize=30;fillColor=#e1d5e7;strokeColor=#9673a6;fontStyle=1;fontSize=14;" parent="1" vertex="1">
+          <mxGeometry x="40" y="620" width="600" height="280" as="geometry"/>
+        </mxCell>
+        <mxCell id="inf_load" value="加载模型&#xa;(load_model)" style="ellipse;fillColor=#dae8fc;strokeColor=#6c8ebf;" parent="phase5" vertex="1">
+          <mxGeometry x="40" y="50" width="100" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="inf_engine" value="创建Engine&#xa;(KVCache初始化)" style="rounded=1;fillColor=#fff2cc;strokeColor=#d6b656;" parent="phase5" vertex="1">
+          <mxGeometry x="40" y="120" width="100" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="inf_server" value="FastAPI服务启动&#xa;(WorkerPool)" style="rounded=1;fillColor=#d5e8d4;strokeColor=#82b366;" parent="phase5" vertex="1">
+          <mxGeometry x="40" y="190" width="100" height="50" as="geometry"/>
+        </mxCell>
+        
+        <mxCell id="inf_req" value="用户请求" style="ellipse;fillColor=#f8cecc;strokeColor=#b85450;" parent="phase5" vertex="1">
+          <mxGeometry x="200" y="50" width="80" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="inf_tok_enc" value="Tokenize输入" style="rounded=1;fillColor=#fff2cc;strokeColor=#d6b656;" parent="phase5" vertex="1">
+          <mxGeometry x="300" y="50" width="100" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="inf_prefill" value="Prefill&#xa;(处理prompt)" style="rounded=1;fillColor=#e1d5e7;strokeColor=#9673a6;" parent="phase5" vertex="1">
+          <mxGeometry x="420" y="50" width="90" height="45" as="geometry"/>
+        </mxCell>
+        <mxCell id="inf_decode" value="Decode Loop&#xa;(自回归生成)" style="rhombus;fillColor=#ffe6cc;strokeColor=#d79b00;" parent="phase5" vertex="1">
+          <mxGeometry x="410" y="115" width="110" height="55" as="geometry"/>
+        </mxCell>
+        <mxCell id="inf_sample" value="sample_next_token&#xa;(温度采样+top_k)" style="rounded=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" parent="phase5" vertex="1">
+          <mxGeometry x="240" y="120" width="130" height="45" as="geometry"/>
+        </mxCell>
+        <mxCell id="inf_tool" value="工具调用?&#xa;(Calculator)" style="rhombus;fillColor=#f5f5f5;strokeColor=#666666;" parent="phase5" vertex="1">
+          <mxGeometry x="250" y="185" width="110" height="50" as="geometry"/>
+        </mxCell>
+        <mxCell id="inf_dec" value="Decode响应" style="rounded=1;fillColor=#d5e8d4;strokeColor=#82b366;" parent="phase5" vertex="1">
+          <mxGeometry x="420" y="195" width="90" height="40" as="geometry"/>
+        </mxCell>
+        <mxCell id="inf_stream" value="流式返回" style="ellipse;fillColor=#d5e8d4;strokeColor=#82b366;" parent="phase5" vertex="1">
+          <mxGeometry x="510" y="115" width="70" height="45" as="geometry"/>
+        </mxCell>
+        
+        <mxCell id="e21" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;" parent="phase5" source="inf_load" target="inf_engine" edge="1"/>
+        <mxCell id="e22" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;" parent="phase5" source="inf_engine" target="inf_server" edge="1"/>
+        <mxCell id="e23" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;" parent="phase5" source="inf_req" target="inf_tok_enc" edge="1"/>
+        <mxCell id="e24" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;" parent="phase5" source="inf_tok_enc" target="inf_prefill" edge="1"/>
+        <mxCell id="e25" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;" parent="phase5" source="inf_prefill" target="inf_decode" edge="1"/>
+        <mxCell id="e26" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;" parent="phase5" source="inf_decode" target="inf_sample" edge="1"/>
+        <mxCell id="e27" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;" parent="phase5" source="inf_sample" target="inf_tool" edge="1"/>
+        <mxCell id="e28" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;entryX=0;entryY=0.5;" parent="phase5" source="inf_tool" target="inf_dec" edge="1"/>
+        <mxCell id="e29" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;exitX=1;exitY=0.5;" parent="phase5" source="inf_decode" target="inf_stream" edge="1"/>
+        
+        <!-- 阶段连接箭头 -->
+        <mxCell id="phase_arrow1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;strokeWidth=3;strokeColor=#82b366;" parent="1" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="340" y="220" as="sourcePoint"/>
+            <mxPoint x="360" y="220" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="phase_arrow2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;strokeWidth=3;strokeColor=#82b366;" parent="1" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="700" y="280" as="sourcePoint"/>
+            <mxPoint x="720" y="280" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="phase_arrow3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;strokeWidth=3;strokeColor=#d79b00;dashed=1;" parent="1" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1020" y="280" as="sourcePoint"/>
+            <mxPoint x="1040" y="280" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="phase_arrow4" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;strokeWidth=3;strokeColor=#9673a6;" parent="1" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="870" y="490" as="sourcePoint"/>
+            <mxPoint x="870" y="540" as="targetPoint"/>
+            <Array as="points"><mxPoint x="870" y="510"/><mxPoint x="340" y="510"/><mxPoint x="340" y="620"/></Array>
+          </mxGeometry>
+        </mxCell>
+        
+        <!-- 图例 -->
+        <mxCell id="legend" value="图例" style="swimlane;startSize=25;fillColor=#ffffff;strokeColor=#333333;fontStyle=1;" parent="1" vertex="1">
+          <mxGeometry x="660" y="620" width="350" height="100" as="geometry"/>
+        </mxCell>
+        <mxCell id="leg_proc" value="处理步骤" style="rounded=1;fillColor=#fff2cc;strokeColor=#d6b656;" parent="legend" vertex="1">
+          <mxGeometry x="10" y="35" width="70" height="25" as="geometry"/>
+        </mxCell>
+        <mxCell id="leg_dec" value="判断" style="rhombus;fillColor=#e1d5e7;strokeColor=#9673a6;" parent="legend" vertex="1">
+          <mxGeometry x="90" y="30" width="60" height="35" as="geometry"/>
+        </mxCell>
+        <mxCell id="leg_io" value="输入/输出" style="ellipse;fillColor=#d5e8d4;strokeColor=#82b366;" parent="legend" vertex="1">
+          <mxGeometry x="160" y="32" width="80" height="30" as="geometry"/>
+        </mxCell>
+        <mxCell id="leg_opt" value="可选路径" style="endArrow=block;dashed=1;html=1;strokeWidth=2;" parent="legend" edge="1">
+          <mxGeometry x="-0.2" relative="1" as="geometry">
+            <mxPoint x="250" y="55" as="sourcePoint"/>
+            <mxPoint x="330" y="55" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
